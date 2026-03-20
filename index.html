@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotización Torakku</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --torakku-red: #e30613;
+            --border-gray: #888888;
+        }
+
+        body { font-family: Arial, sans-serif; background-color: #f0f2f5; padding: 20px; margin: 0; }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* --- ESTA ES LA CLAVE PARA QUE SE VEA IGUAL A LA PLANILLA --- */
+        #cotizacion-completa.pdf-printing { 
+            width: 850px !important; 
+            margin: 0 !important; 
+            padding: 30px !important; 
+        }
+
+        /* Encabezado */
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .logo-text { font-size: 38px; font-weight: 900; color: black; font-family: 'Arial Black', sans-serif; margin: 0; }
+        .logo-text span { color: var(--torakku-red); }
+        .company-info { font-size: 12px; line-height: 1.4; margin-top: 10px; color: #333; }
+
+        .header-right { text-align: right; }
+        .cotizacion-box { border: 2px solid var(--border-gray); padding: 15px; text-align: center; width: 220px; margin-bottom: 10px; }
+        .cotizacion-box h2 { margin: 0; font-size: 20px; letter-spacing: 1px; }
+        .cotizacion-box p { margin: 5px 0 0; font-weight: bold; font-size: 16px; }
+
+        .fecha-debajo { text-align: right; font-size: 13px; margin-bottom: 10px; }
+        .fecha-debajo input { border: 1px solid #ccc; padding: 4px; border-radius: 4px; font-weight: bold; }
+
+        /* Tablas */
+        .client-table { width: 100%; border: 1.5px solid #444; border-collapse: collapse; margin-bottom: 25px; }
+        .client-table td { border: 1px solid #444; padding: 8px; font-size: 13px; }
+        .label-cell { background-color: #f2f2f2; font-weight: bold; width: 110px; }
+        .label-fono { background-color: #f2f2f2; font-weight: bold; width: 60px; text-align: center; }
+        .input-data { border: none; width: 100%; font-weight: bold; text-transform: uppercase; outline: none; background: transparent; }
+
+        .col-rut-contacto { width: 40%; }
+        .col-fono-input { width: 25%; }
+
+        .products-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .products-table th { background: black; color: white; padding: 12px; text-align: left; font-size: 13px; }
+        .products-table td { border: 1px solid #ddd; padding: 8px; }
+        .input-cell { width: 100%; border: none; padding: 5px; background: transparent; font-size: 13px; }
+
+        /* Totales */
+        .totals-wrapper { display: flex; justify-content: flex-end; margin-top: 15px; }
+        .total-box { width: 320px; border: 2px solid black; padding: 15px; }
+        .total-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .total-final { font-size: 1.2rem; font-weight: bold; border-top: 2px solid black; padding-top: 8px; }
+        .input-total { border: 1px solid #ccc; width: 100px; text-align: right; font-weight: bold; padding: 4px; }
+
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin: 5px; }
+        .btn-add { background: #007bff; color: white; }
+        .controls { text-align: center; margin-top: 30px; padding-bottom: 50px; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="cotizacion-completa">
+    <div class="header">
+        <div class="header-left">
+            <h1 class="logo-text">TORA<span>KK</span>U</h1>
+            <div class="company-info">
+                <strong>Torakku importaciones Part & Services</strong><br>
+                Rut: [TU RUT AQUÍ]<br>
+                Dirección: [TU DIRECCIÓN]<br>
+                Correo: [TU CORREO]<br>
+                Fono: +56 9 84334431 / +56 9 89063529<br>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="cotizacion-box">
+                <h2>COTIZACIÓN</h2>
+                <p>N° <input type="text" id="numero" value="63.871" style="border:none; width:80px; font-weight:bold; text-align:center; outline:none;"></p>
+            </div>
+            <div class="fecha-debajo">
+                <label>FECHA:</label>
+                <input type="date" id="fecha">
+            </div>
+        </div>
+    </div>
+
+    <table class="client-table">
+        <tr>
+            <td class="label-cell">Razón social</td>
+            <td colspan="3"><input class="input-data" id="empresa"></td>
+        </tr>
+        <tr>
+            <td class="label-cell">RUT</td>
+            <td class="col-rut-contacto"><input class="input-data" id="rut_cliente"></td>
+            <td class="label-fono">Fono</td>
+            <td class="col-fono-input"><input class="input-data" id="fono_cliente"></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Dirección</td>
+            <td colspan="3"><input class="input-data" id="direccion_cliente"></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Correo</td>
+            <td colspan="3"><input class="input-data" id="correo_cliente"></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Contacto</td>
+            <td class="col-rut-contacto"><input class="input-data" id="contacto_cliente"></td>
+            <td class="label-fono">Fono</td>
+            <td class="col-fono-input"><input class="input-data" id="fono_contacto"></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Forma Pago</td>
+            <td colspan="3"><input class="input-data" id="forma_pago" ></td>
+        </tr>
+    </table>
+
+    <table class="products-table">
+        <thead>
+            <tr>
+                <th>Descripción</th>
+                <th style="width:80px;">Cant.</th>
+                <th style="width:120px;">Unitario</th>
+                <th style="width:120px;">Subtotal</th>
+                <th style="width:40px;" class="no-pdf-action"></th>
+            </tr>
+        </thead>
+        <tbody id="items">
+            <tr>
+                <td><input class="input-cell desc" placeholder="Producto/Servicio"></td>
+                <td><input type="number" class="input-cell qty" value="1" min="1" oninput="recalcular()"></td>
+                <td><input type="number" class="input-cell price" value="0" oninput="recalcular()"></td>
+                <td class="line-total">$0</td>
+                <td class="no-pdf-action"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-add no-pdf-action" onclick="agregarItem()">+ Agregar Ítem</button>
+
+    <div class="totals-wrapper">
+        <div class="total-box">
+            <div class="total-item">
+                <span>NETO:</span>
+                <span id="neto">$0</span>
+            </div>
+            <div class="total-item" style="color: var(--torakku-red);">
+                <span>DESCUENTO (-):</span>
+                <span>$ <input type="number" id="descuento" class="input-total" value="0" oninput="recalcular()"></span>
+            </div>
+            <div class="total-item">
+                <span>IVA (19%):</span>
+                <span id="iva">$0</span>
+            </div>
+            <div class="total-item total-final">
+                <span>TOTAL:</span>
+                <span id="total">$0</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="controls">
+    <button class="btn" id="btn-descargar" style="background:#28a745; color:white; font-size: 16px; padding: 15px 30px;" onclick="descargarPDF()">Descargar Cotización</button>
+</div>
+
+<script>
+    function agregarItem() {
+        const tbody = document.getElementById("items");
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+            <td><input class="input-cell desc" placeholder="Producto/Servicio"></td>
+            <td><input type="number" class="input-cell qty" value="1" min="1" oninput="recalcular()"></td>
+            <td><input type="number" class="input-cell price" value="0" oninput="recalcular()"></td>
+            <td class="line-total">$0</td>
+            <td class="no-pdf-action"><button type="button" style="background:red; color:white; border:none; cursor:pointer; padding:2px 6px;" onclick="this.closest('tr').remove(); recalcular();">X</button></td>
+        `;
+        tbody.appendChild(fila);
+    }
+
+    function recalcular() {
+        let netoTotal = 0;
+        document.querySelectorAll("#items tr").forEach(row => {
+            const q = parseFloat(row.querySelector(".qty").value) || 0;
+            const p = parseFloat(row.querySelector(".price").value) || 0;
+            const sub = q * p;
+            const cell = row.querySelector(".line-total");
+            if(cell) cell.innerText = "$" + sub.toLocaleString("es-CL");
+            netoTotal += sub;
+        });
+
+        const dcto = parseFloat(document.getElementById("descuento").value) || 0;
+        const netoConDcto = Math.max(0, netoTotal - dcto);
+        const iva = Math.round(netoConDcto * 0.19);
+        const total = netoConDcto + iva;
+
+        document.getElementById("neto").innerText = "$" + netoTotal.toLocaleString("es-CL");
+        document.getElementById("iva").innerText = "$" + iva.toLocaleString("es-CL");
+        document.getElementById("total").innerText = "$" + total.toLocaleString("es-CL");
+    }
+
+    async function descargarPDF() {
+        const numCot = document.getElementById('numero').value || "000";
+        const nombreEmpresa = document.getElementById('empresa').value || 'Cliente';
+        let nombreArchivo = prompt("Ingrese nombre del archivo:", `Cotizacion_${numCot}_${nombreEmpresa}`);
+        if(!nombreArchivo) nombreArchivo = `Cotizacion_${numCot}_${nombreEmpresa}`;
+
+        const elemento = document.getElementById('cotizacion-completa');
+        
+        // IGUAL A PLANILLA: Sincronizar estados
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            if(cb.checked) cb.setAttribute('checked', 'checked');
+            else cb.removeAttribute('checked');
+        });
+
+        document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea').forEach(i => {
+            i.setAttribute('value', i.value);
+        });
+
+        // Activar modo PDF (Ajusta el ancho a 850px)
+        elemento.classList.add('pdf-printing');
+
+        const botonesNoPdf = document.querySelectorAll('.no-pdf-action');
+        botonesNoPdf.forEach(btn => btn.style.display = 'none');
+
+        const opt = {
+            margin: 5,
+            filename: nombreArchivo + ".pdf",
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { 
+                scale: 2, 
+                width: 850,         // <-- AJUSTE 1: Coincide con el ancho de tu clase .pdf-printing
+                windowWidth: 850,   // <-- AJUSTE 2: Obliga a la tablet a capturar como si fuera un monitor
+                useCORS: true 
+            },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        try {
+            await html2pdf().set(opt).from(elemento).save();
+        } finally {
+            // Restaurar visualización
+            elemento.classList.remove('pdf-printing');
+            botonesNoPdf.forEach(btn => btn.style.display = '');
+        }
+    }
+
+    window.onload = () => {
+        document.getElementById("fecha").value = new Date().toISOString().split('T')[0];
+    };
+</script>
+
+</body>
+</html>
